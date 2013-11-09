@@ -57,8 +57,8 @@ app.configure('development', function(){
 
 
 var routes = {};
-routes.couch_auth = require('routes/couch_auth');
-routes.couch_proxy = require('routes/couch_proxy');
+routes.couch_auth = require('./routes/couch_auth');
+routes.couch_proxy = require('./routes/couch_proxy');
 
 app.get('/', function(req, res){
   res.json(501, { error: 'Not implemented'});
