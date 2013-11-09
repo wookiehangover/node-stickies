@@ -45,6 +45,8 @@ module.exports = function(app){
         res.json(response);
       };
 
+      console.log(resp.statusCode, body)
+
       if( resp.statusCode === 409 ){
         res.couch.login(user, onSuccess);
       } else {
