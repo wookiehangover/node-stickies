@@ -27,7 +27,7 @@ app.configure(function(){
 
   app.use(cors({
     origin: function(origin, cb){
-      var whitelisted = ['http://localhost:9000'].indexOf(origin) !== -1;
+      var whitelisted = ['http://localhost:9000', 'http://wintermute.local:9000'].indexOf(origin) !== -1;
       console.log(whitelisted)
       cb(null, whitelisted);
     },
