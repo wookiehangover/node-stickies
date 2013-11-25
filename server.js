@@ -10,6 +10,8 @@ var cors = require('cors');
 var CouchLogin = require('couch-login');
 var nano = require('nano');
 var config = require('config');
+var whitelist = config.whitelist;
+var logger = require('./lib/logger');
 
 /*
  * Application init
@@ -23,12 +25,11 @@ app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.logger('dev'));
+  app.use(express.logger({ stream: logger.logStream, format: 'dev' }));
 
   app.use(cors({
     origin: function(origin, cb){
-      var whitelisted = ['http://localhost:9000', 'http://wintermute.local:9000'].indexOf(origin) !== -1;
-      console.log(whitelisted)
+      var whitelisted = whitelist.indexOf(origin) !== -1;
       cb(null, whitelisted);
     },
     credentials: true
@@ -37,10 +38,12 @@ app.configure(function(){
   app.use(function(req, res, next){
     couchLogin.decorate(req, res);
     req.nano = couchAdapter;
+    req.logger = res.logger = logger;
     next();
   });
 
-  app.use(express.bodyParser());
+  app.use(express.json());
+  app.use(express.urlencoded());
   app.use(app.router);
 
   // frontend application
@@ -69,6 +72,6 @@ routes.couch_auth(app);
 routes.couch_proxy(app);
 
 http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+  logger.info("Express server listening on port " + app.get('port'));
 });
 
